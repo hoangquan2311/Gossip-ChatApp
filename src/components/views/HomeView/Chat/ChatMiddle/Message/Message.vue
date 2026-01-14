@@ -7,8 +7,6 @@ import type {
 import linkifyStr from "linkify-string";
 import { inject } from "vue";
 
-import { getFullName } from "@src/utils";
-
 import Receipt from "@src/components/views/HomeView/Chat/ChatMiddle/Message/Receipt.vue";
 
 const props = defineProps<{
@@ -16,9 +14,6 @@ const props = defineProps<{
   followUp: boolean;
   self: boolean;
   divider?: boolean;
-  selected?: boolean;
-  handleSelectMessage: (messageId: number) => void;
-  handleDeselectMessage: (messageId: number) => void;
 }>();
 
 const activeConversation = <IConversation>inject("activeConversation");
@@ -46,11 +41,11 @@ const hideAvatar = () => {
       <div class="mr-4" :class="{ 'ml-[2.25rem]': props.followUp && !divider }">
         <div
           v-if="!hideAvatar()"
-          :aria-label="getFullName(props.message.sender)"
+          :aria-label="props.message.sender.avatarUrl"
           class="outline-none"
         >
           <div
-            :style="{ backgroundImage: `url(${props.message.sender.avatar})` }"
+            :style="{ backgroundImage: `url(${props.message.sender.avatarUrl})` }"
             class="w-[2.25rem] h-[2.25rem] bg-cover bg-center rounded-full"
           ></div>
         </div>
@@ -61,19 +56,6 @@ const hideAvatar = () => {
         <div
           @contextmenu.prevent
           class="group max-w-125 p-5 rounded-b-xl transition duration-500"
-          :class="{
-            'rounded-tl-xl ml-4 order-2 bg-indigo-50 dark:bg-gray-600':
-              props.self && !props.selected,
-
-            'rounded-tr-xl mr-4 bg-gray-50 dark:bg-gray-600':
-              !props.self && !props.selected,
-
-            'rounded-tl-xl ml-4 order-2 bg-indigo-200 dark:bg-indigo-500':
-              props.self && props.selected,
-
-            'rounded-tr-xl mr-4 bg-indigo-200 dark:bg-indigo-500':
-              !props.self && props.selected,
-          }"
         >
           <!--reply to-->
           <!-- <MessagePreview
@@ -101,44 +83,17 @@ const hideAvatar = () => {
             "
             tabindex="0"
           ></p>
-
-          <!--recording-->
-          <!-- <div
-            v-else-if="
-              props.message.content && props.message.type === 'recording'
-            "
-          >
-            <Recording
-              :recording="<IRecording>props.message.content"
-              :self="props.self"
-            />
-          </div> -->
-
-          <!--attachments-->
-          <!-- <Attachments
-            v-if="(props.message.attachments as [])?.length > 0"
-            :message="props.message"
-            :self="props.self"
-          /> -->
-
-          <!--link preview-->
-          <!-- <LinkPreview
-            v-if="props.message.previewData && !props.message.attachments"
-            :self="props.self"
-            :preview-data="props.message.previewData as IPreviewData"
-            class="mt-5"
-          /> -->
         </div>
 
         <!--date-->
         <div :class="props.self ? ['ml-4', 'order-1'] : ['mr-4']">
           <p class="body-1 text-black/70 dark:text-white/70 whitespace-pre">
-            {{ props.message.date }}
+            {{ props.message.sentAt }}
           </p>
         </div>
 
         <!--read receipt-->
-        <Receipt v-if="props.self" :state="props.message.state" />
+        <Receipt v-if="props.self" :state="props.message.sentAt" />
       </div>
     </div>
     

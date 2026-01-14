@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-import useStore from "@src/store/store";
+import useStore from "../../../../store/store";
 
 import {
   MoonIcon,
@@ -42,9 +42,9 @@ const showDropdown = ref(false);
 
           <li class="xs:block md:hidden">
             <NavLink
-              :icon="store.settings.darkMode ? SunIcon : MoonIcon"
+              :icon="store.darkMode ? SunIcon : MoonIcon"
               title="Night mode"
-              @click="store.settings.darkMode = !store.settings.darkMode"
+              @click="store.darkMode = !store.darkMode"
             />
           </li>
         </ul>
@@ -58,9 +58,9 @@ const showDropdown = ref(false);
           <!--toggle dark mode button-->
           <li>
             <NavLink
-              :icon="store.settings.darkMode ? SunIcon : MoonIcon"
+              :icon="store.darkMode ? SunIcon : MoonIcon"
               title="Night mode"
-              @click="store.settings.darkMode = !store.settings.darkMode"
+              @click="store.darkMode = !store.darkMode"
             />
           </li>
         </ul>

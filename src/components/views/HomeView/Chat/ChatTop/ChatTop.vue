@@ -6,8 +6,6 @@ import { inject, ref } from "vue";
 import ConversationInfoModal from "@src/components/shared/modals/ConversationInfoModal/ConversationInfoModal.vue";
 import ConversationInfoSection from "./ConversationInfoSection.vue";
 
-
-
 const activeConversation = <IConversation>inject("activeConversation");
 
 const openInfo = ref(false);

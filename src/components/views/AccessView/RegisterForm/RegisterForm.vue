@@ -6,18 +6,13 @@ import type { AxiosError } from "axios";
 import SlideTransition from "@src/components/ui/transitions/SlideTransition.vue";
 import PasswordSection from "@src/components/views/AccessView/RegisterForm/PasswordSection.vue";
 import PersonalSection from "@src/components/views/AccessView/RegisterForm/PersonalSection.vue";
-import { useAuth } from "@src/composables/useAuth";
-import useStore from "@src/store/store";
+import { useAuth } from "@src/services/AuthService/useAuth";
+import useStore from "../../../../store/store";
 
-import type { RegisterPersonalForm, RegisterPasswordForm } from "./types";
-import { AuthResponse } from "@src/services/authService";
+import type { RegisterPersonalForm, RegisterPasswordForm } from "@src/types";
+import { RegisterRequest } from "@src/services/AuthService/authService";
 
-
-// defineEmits(["activeSectionChange"]);
 const auth = useAuth();
-const router = useRouter();
-const store = useStore();
-// determines what form section to use.
 const activeSectionName = ref("personal-section");
 
 // determines what direction the slide animation should use.
@@ -112,7 +107,7 @@ const submitRegistration = async () => {
   errorMessage.value = null;
 
   if (!personalInfoIsComplete.value) {
-    handlePersonalInfoError("Please type in your personal information.");
+    handlePersonalInfoError("Please fill in all your personal information.");
     return;
   }
 
@@ -125,14 +120,14 @@ const submitRegistration = async () => {
     errorMessage.value = "Please type in your password.";
     return;
   }
-
-  if (!passwordLengthIsValid.value) {
-    errorMessage.value = "Passwords is too short.";
+  
+  if (!passwordHasNoAccents.value) {
+    errorMessage.value = "Password contains invalid characters.";
     return;
   }
 
-  if (!passwordHasNoAccents.value) {
-    errorMessage.value = "Password contains invalid characters.";
+  if (!passwordLengthIsValid.value) {
+    errorMessage.value = "Passwords must be at least 8 characters long.";
     return;
   }
 
@@ -144,14 +139,14 @@ const submitRegistration = async () => {
   isSubmitting.value = true;
 
   try {
-    const payload = {
+    const payload: RegisterRequest = {
       email: personalForm.email.trim(),
       displayName: `${personalForm.firstName} ${personalForm.lastName}`.trim(),
       password: passwordForm.password,
     };
 
-    const response : AuthResponse = await auth.register(payload);
-    console.log("Registration successful. Token: " + response.accessToken);
+    await auth.register(payload);
+    // console.log("Registration successful " + store.user);
   } catch (error) {
     const axiosError = error as AxiosError;
     errorMessage.value =
@@ -187,12 +182,12 @@ const sectionProps = computed(() => {
     <div class="w-full md:px-[26%] xs:px-[10%]">
       <!--header-->
       <div class="mb-6 flex flex-col">
-        <img
+        <!-- <img
           src="@src/assets/vectors/logo-gradient.svg"
           class="w-5.5 h-4.5 mb-5 opacity-70"
-        />
+        /> -->
         <p class="heading-2 text-black/70 dark:text-white/70 mb-4">
-          Get started with Avian
+          Hello
         </p>
         <p class="body-3 text-black/75 dark:text-white/70 font-light">
           Sign in to start using messaging!

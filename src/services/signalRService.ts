@@ -4,6 +4,7 @@ import {
   HubConnectionState,
   LogLevel,
 } from "@microsoft/signalr";
+import type { GroupDto } from "@src/services/serverDtos";
 
 export type ReceiveMessagePayload = {
   id: string;
@@ -12,12 +13,16 @@ export type ReceiveMessagePayload = {
   senderName: string;
   content: string;
   sentAt: string;
-  readers: Array<{ userId: string; userName: string }>;
 };
 
 export type SendMessageRequest = {
   groupId: string;
   content: string;
+};
+
+export type CreateGroupRequest = {
+  title: string;
+  participantIds: string[];
 };
 
 type SignalRClientOptions = {
@@ -103,11 +108,17 @@ export function createSignalRClient(opts: SignalRClientOptions = {}) {
     });
   };
 
+  const createGroup = async (payload: CreateGroupRequest): Promise<GroupDto> => {
+    await ensureConnection();
+    return connection!.invoke<GroupDto>("createGroup", payload);
+  };
+
   return {
     connect,
     disconnect,
     joinConversation,
     sendMessage,
+    createGroup,
     getConnection: () => connection,
   };
 }

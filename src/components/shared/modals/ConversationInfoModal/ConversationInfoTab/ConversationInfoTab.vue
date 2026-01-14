@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import type { IContact, IConversation } from "@src/types";
+import type { IConversation, IUser } from "@src/types";
 
 import { computed, ref } from "vue";
-
-import { getAvatar, getName } from "@src/utils";
 
 import {
   ArrowLeftOnRectangleIcon,
@@ -18,19 +16,11 @@ import IconButton from "@src/components/ui/inputs/IconButton.vue";
 
 const props = defineProps<{
   conversation: IConversation;
-  contact?: IContact;
   closeModal: () => void;
 }>();
 
 const openImageViewer = ref(false);
 
-const imageUrl = computed(() => {
-  if (props.contact) {
-    return props.contact.avatar;
-  } else {
-    return getAvatar(props.conversation);
-  }
-});
 </script>
 
 <template>
@@ -45,18 +35,8 @@ const imageUrl = computed(() => {
         Group Info
       </p>
 
-      <!--close button-->
-      <Button
-        v-if="!props.contact"
-        @click="props.closeModal"
-        class="outlined-danger ghost-text py-2 px-4"
-      >
-        Esc
-      </Button>
-
       <!--return button-->
       <IconButton
-        v-else
         @click="
           $emit('active-page-change', {
             tabName: 'members',
@@ -83,7 +63,7 @@ const imageUrl = computed(() => {
           >
             <div
               :style="{
-                backgroundImage: `url(${getAvatar(props.conversation)})`,
+                backgroundImage: `url(${props.conversation.avatarUrl})`,
               }"
               class="w-9.5 h-9.5 rounded-full bg-cover bg-center"
             ></div>
@@ -97,7 +77,7 @@ const imageUrl = computed(() => {
               class="heading-2 text-black/70 dark:text-white/70 mb-3 mr-5 text-start"
             >
               <span>
-                {{ getName(props.conversation) }}
+                {{ props.conversation.title }}
               </span>
             </p>
 
@@ -105,7 +85,7 @@ const imageUrl = computed(() => {
               class="body-2 text-black/70 dark:text-white/70 font-extralight text-start"
             >
               {{
-                `${props.conversation.contacts.length} members`
+                `${props.conversation.members.length} members`
               }}
             </p>
           </div>
@@ -159,7 +139,7 @@ const imageUrl = computed(() => {
 
     <!--image viewer-->
     <ImageViewer
-      :image-url="imageUrl"
+      :image-url="props.conversation.avatarUrl"
       :open="openImageViewer"
       :close-image="() => (openImageViewer = false)"
     />

@@ -4,15 +4,11 @@ import type { Ref } from "vue";
 
 import { ref } from "vue";
 
-import useStore from "@src/store/store";
+import useStore from "../../../../store/store";
 
-import { EllipsisVerticalIcon } from "@heroicons/vue/24/outline";
 import { ArrowUturnLeftIcon } from "@heroicons/vue/24/solid";
 import ContactItem from "@src/components/shared/blocks/ContactItem.vue";
 import IconButton from "@src/components/ui/inputs/IconButton.vue";
-import SearchInput from "@src/components/ui/inputs/SearchInput.vue";
-import Dropdown from "@src/components/ui/navigation/Dropdown/Dropdown.vue";
-import DropdownLink from "@src/components/ui/navigation/Dropdown/DropdownLink.vue";
 import ScrollBox from "@src/components/ui/utils/ScrollBox.vue";
 
 const props = defineProps<{
@@ -21,63 +17,6 @@ const props = defineProps<{
 }>();
 
 const store = useStore();
-
-// html container of the contacts list
-const contactContainer: Ref<HTMLElement | undefined> = ref();
-
-// controls the states of contact dropdown menus
-const dropdownMenuStates: Ref<boolean[] | undefined> = ref(
-  props.conversation.contacts?.map(() => false),
-);
-
-// the position of the dropdown menu
-const dropdownMenuPosition = ref(["top-6", "right-0"]);
-
-// (event) close all dropdowns
-const closeDropdowns = () => {
-  dropdownMenuStates.value = props.conversation.contacts?.map(() => false);
-};
-
-// (event) open/close the dropdown menu
-const handleToggleDropdown = (event: Event, contactIndex: number) => {
-  if (contactContainer) {
-    let buttonBottom = (
-      event.currentTarget as HTMLElement
-    ).getBoundingClientRect().bottom;
-    let containerBottom = (
-      contactContainer.value as HTMLElement
-    ).getBoundingClientRect().bottom;
-
-    if (buttonBottom >= containerBottom - 50) {
-      dropdownMenuPosition.value = ["bottom-6", "right-0"];
-    } else {
-      dropdownMenuPosition.value = ["top-6", "right-0"];
-    }
-  }
-
-  dropdownMenuStates.value = props.conversation.contacts?.map(
-    (value, index) => {
-      if (contactIndex === index) {
-        return true;
-      } else {
-        return false;
-      }
-    },
-  );
-};
-
-// (event) close doprdown menu when clicking outside
-const handleClickOutside = (event: Event) => {
-  let target = event.target as HTMLElement;
-
-  if (
-    target.parentElement &&
-    !target.classList.contains("open-menu") &&
-    !(target.parentElement as HTMLElement).classList.contains("open-menu")
-  ) {
-    closeDropdowns();
-  }
-};
 </script>
 
 <template>
@@ -109,21 +48,12 @@ const handleClickOutside = (event: Event) => {
       <SearchInput />
     </div> -->
 
-    <!--contacts-->
+    <!--members-->
     <div ref="contactContainer">
       <ScrollBox class="max-h-58 overflow-y-scroll">
         <ContactItem
-          variant="card"
-          @contact-selected="
-            (contact) =>
-              $emit('active-page-change', {
-                tabName: 'conversation-info',
-                animationName: 'slide-left',
-                contact: contact,
-              })
-          "
-          v-for="(contact, index) in props.conversation.contacts"
-          :contact="contact"
+          v-for="(member, index) in props.conversation.members"
+          :member="member"
           :key="index"
         >
         </ContactItem>

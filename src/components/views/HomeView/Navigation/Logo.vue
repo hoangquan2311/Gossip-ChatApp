@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import useStore from "@src/store/store";
+import useStore from "../../../../store/store";
 import { ForwardIcon } from "@heroicons/vue/24/outline";
 
 let SkipLinkFocused = ref(false);
@@ -30,7 +30,7 @@ const store = useStore();
       class="outline-none"
     >
       <img
-        v-if="!store.settings.darkMode"
+        v-if="!store.darkMode"
         src="@src/assets//vectors/logo.svg"
         class="w-8 h-7"
         alt="gray bird logo"

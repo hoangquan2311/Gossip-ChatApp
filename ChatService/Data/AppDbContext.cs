@@ -11,7 +11,6 @@ public class AppDbContext : DbContext
     public DbSet<GroupChat> Groups => Set<GroupChat>();
     public DbSet<GroupMember> GroupMembers => Set<GroupMember>();
     public DbSet<Message> Messages => Set<Message>();
-    public DbSet<MessageReader> Readers => Set<MessageReader>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -41,18 +40,5 @@ public class AppDbContext : DbContext
             .HasOne(m => m.Sender)
             .WithMany()
             .HasForeignKey(m => m.SenderId);
-
-        b.Entity<MessageReader>()
-               .HasKey(mr => new { mr.MessageId, mr.UserId });
-
-        b.Entity<MessageReader>()
-            .HasOne(mr => mr.Message)
-            .WithMany(m => m.Readers)
-            .HasForeignKey(mr => mr.MessageId);
-
-        b.Entity<MessageReader>()
-            .HasOne(mr => mr.User)
-            .WithMany()
-            .HasForeignKey(mr => mr.UserId);
     }
 }

@@ -4,8 +4,7 @@ import type { Ref } from "vue";
 
 import { ref, watch } from "vue";
 
-import useStore from "@src/store/store";
-import { getName } from "@src/utils";
+import useStore from "../../../../../store/store";
 
 import { PencilSquareIcon } from "@heroicons/vue/24/outline";
 import ComposeModal from "@src/components/shared/modals/ComposeModal/ComposeModal.vue";
@@ -15,6 +14,7 @@ import SearchInput from "@src/components/ui/inputs/SearchInput.vue";
 import FadeTransition from "@src/components/ui/transitions/FadeTransition.vue";
 import SidebarHeader from "@src/components/views/HomeView/Sidebar/SidebarHeader.vue";
 import Conversation from "./Conversation.vue";
+import NoConversation from "@src/components/states/empty-states/NoConversation.vue";
 
 const store = useStore();
 
@@ -29,16 +29,16 @@ const composeOpen = ref(false);
 const filteredConversations: Ref<IConversation[]> = ref(store.conversations);
 
 // filter the list of conversation based on search text.
-watch(keyword, () => {
-    // search conversations
-    filteredConversations.value =
-      store.conversations?.filter(
-        (conversation) =>
-          getName(conversation)
-            ?.toLowerCase()
-            .includes(keyword.value.toLowerCase()),
-      ) || [];
-});
+// watch(keyword, () => {
+//     // search conversations
+//     filteredConversations.value =
+//       store.conversations?.filter(
+//         (conversation) =>
+//           getName(conversation)
+//             ?.toLowerCase()
+//             .includes(keyword.value.toLowerCase()),
+//       ) || [];
+// });
 
 // (event) close the compose modal.
 const closeComposeModal = () => {
@@ -121,16 +121,16 @@ const closeComposeModal = () => {
               <Conversation
                 v-for="conversation in filteredConversations"
                 :conversation="conversation"
-                :key="conversation.id"
+                :key="conversation.groupId"
                 role="listitem"
               />
             </div>
           </FadeTransition>
         </div>
-
-        <!-- <div v-else>
-          <NoConversation v-if="store.archivedConversations.length === 0" />
-        </div> -->
+        <!-- No conversations -->
+        <div v-else>
+          <NoConversation/>
+        </div>
       </div>
     </div>
 

@@ -14,6 +14,6 @@ public class User
     public string DisplayName { get; set; } = null!;
     [Required]
     public string PasswordHash { get; set; } = null!;
-    public string AvatarUrl { get; set; } = string.Empty;
+    public string? AvatarUrl { get; set; } = null;
     public ICollection<GroupMember> Groups { get; set; } = new List<GroupMember>();
 }

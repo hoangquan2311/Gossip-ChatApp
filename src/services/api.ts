@@ -1,5 +1,5 @@
-import axios, { type AxiosInstance, type InternalAxiosRequestConfig } from 'axios';
-import useStore from '@src/store/store';
+simport axios, { type AxiosInstance, type InternalAxiosRequestConfig } from 'axios';
+import useStore from '../store/store';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -16,7 +16,7 @@ const api: AxiosInstance = axios.create({
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const store = useStore();
-    const token = store.accessToken;
+    const token = store.token;
 
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -36,7 +36,6 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       const store = useStore();
       store.clearTokens();
-      window.location.href = '/access/sign-in/';
     }
 
     return Promise.reject(error);

@@ -2,6 +2,7 @@ using ChatService.Data;
 using ChatService.Models.DTOs;
 using ChatService.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ChatService.Services;
 
@@ -42,11 +43,13 @@ public class GroupService
             .Where(gm => gm.UserId == userId)
             .Select(gm => gm.GroupId)
             .ToListAsync();
-
+        
         var list = new List<GroupDto>();
-        foreach (var id in convIds)
-            list.Add(await MapGroup(id));
-
+        if (convIds.Any())
+        {
+            foreach (var id in convIds)
+                list.Add(await MapGroup(id));
+        }
         return list;
     }
     // Helper method to map GroupChat entity to GroupDto
@@ -57,9 +60,9 @@ public class GroupService
             .SingleAsync(c => c.Id == id);
 
         var members = group.Members
-            .Select(m => new MemberDto(m.UserId, m.User.DisplayName, m.User.Email));
+            .Select(m => new MemberDto(m.UserId, m.User.DisplayName, m.User.Email, m.User.AvatarUrl));
 
-        return new GroupDto(group.Id, group.Title!, members);
+        return new GroupDto(group.Id, group.Title!, group.AvatarUrl, members);
     }
 
     public async Task<bool> UserInGroup(Guid userId, Guid groupId) =>

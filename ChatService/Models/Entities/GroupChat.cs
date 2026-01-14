@@ -9,6 +9,8 @@ public class GroupChat
     [MaxLength(200)]
     public string? Title { get; set; }
 
+    public string? AvatarUrl { get; set; }
+
     public ICollection<GroupMember> Members { get; set; } = new List<GroupMember>();
     public ICollection<Message> Messages { get; set; } = new List<Message>();
 }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import GroupTab from "@src/components/shared/modals/ComposeModal/GroupTab/GroupTab.vue";
+import GroupTab from "@src/components/shared/modals/ComposeModal/GroupTab.vue";
 import Button from "@src/components/ui/inputs/Button.vue";
 import FadeTransition from "@src/components/ui/transitions/FadeTransition.vue";
 import Modal from "@src/components/ui/utils/Modal.vue";
@@ -22,9 +22,9 @@ const props = defineProps<{
             id="modal-title"
             class="heading-1 text-black/70 dark:text-white/70"
             ref="modalTitle"
-            tabindex="0"
+            tabindex="0"  
           >
-            Add Group
+            New Group
           </p>
 
           <Button
@@ -37,7 +37,7 @@ const props = defineProps<{
 
         <!--ActiveTab-->
         <FadeTransition>
-          <component :is="GroupTab"/>
+          <component :is="GroupTab" :close-modal="props.closeModal"/>
         </FadeTransition>
       </div>
     </template>

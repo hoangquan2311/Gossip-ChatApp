@@ -3,8 +3,9 @@ using ChatService.Data;
 using ChatService.Models.DTOs;
 using ChatService.Models.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 namespace ChatService.Services;
 public class AuthService
@@ -38,26 +39,27 @@ public class AuthService
         {
             Email = req.Email,
             DisplayName = req.DisplayName,
+            AvatarUrl = req.AvatarUrl,
             PasswordHash = _hasher.HashPassword(null!, req.Password)
         };
         _db.Users.Add(user);
         await _db.SaveChangesAsync();
 
         var token = _tokenService.CreateToken(user);
-        return new AuthResponse(user.Id, user.Email, user.DisplayName, token);
+        return new AuthResponse(user.Id, user.Email, user.DisplayName, user.AvatarUrl, token);
     }
 
     public async Task<AuthResponse> LoginAsync(LoginRequest req)
     {
         var user = await _db.Users.SingleOrDefaultAsync(u => u.Email == req.Email)
-                   ?? throw new UnauthorizedAccessException("Email not registered");
+                   ?? throw new Exception("Email not registered, please sign up.");
 
         var verify = _hasher.VerifyHashedPassword(user, user.PasswordHash, req.Password);
         if (verify == PasswordVerificationResult.Failed)
-            throw new UnauthorizedAccessException("Incorrect password");
+            throw new Exception("Incorrect password, please try again");
 
         var token = _tokenService.CreateToken(user);
-        return new AuthResponse(user.Id, user.Email, user.DisplayName, token);
+        return new AuthResponse(user.Id, user.Email, user.DisplayName, user.AvatarUrl , token);
     }
 
     public async Task ChangePasswordAsync(Guid userId, ChangePasswordRequest req)
@@ -69,5 +71,28 @@ public class AuthService
 
         user.PasswordHash = _hasher.HashPassword(user, req.NewPassword);
         await _db.SaveChangesAsync();
+    }
+
+    // Return user without tracking for verification endpoint
+    public async Task<User?> GetUserByIdAsync(Guid userId)
+    {
+        return await _db.Users.AsNoTracking().SingleOrDefaultAsync(u => u.Id == userId);
+    }
+
+    // Validate ClaimsPrincipal (token) and return user or error
+    public async Task<(bool IsValid, string? Error, User? User)> VerifyUserFromPrincipalAsync(ClaimsPrincipal principal)
+    {
+        var idClaim = principal.FindFirst(ClaimTypes.NameIdentifier) ?? principal.FindFirst("sub");
+        if (string.IsNullOrEmpty(idClaim?.Value))
+            return (false, "Invalid token: missing user ID", null);
+
+        if (!Guid.TryParse(idClaim.Value, out var userId))
+            return (false, "Invalid user ID format", null);
+
+        var user = await GetUserByIdAsync(userId);
+        if (user == null)
+            return (false, "User not found", null);
+
+        return (true, null, user);
     }
 }

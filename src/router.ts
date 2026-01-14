@@ -3,7 +3,7 @@ import AccessView from "@src/components/views/AccessView/AccessView.vue";
 import HomeView from "@src/components/views/HomeView/HomeView.vue";
 import PasswordResetView from "@src/components/views/PasswordResetView/PasswordResetView.vue";
 import Chat from "@src/components/views/HomeView/Chat/Chat.vue";
-import { authGuard } from '@src/router/guards/authGuard';
+import { authGuard } from '@src/services/AuthService/authGuard';
 
 const routes = [
   {

@@ -1,7 +1,7 @@
-<script setup lang="ts">
+RegisterPasswordForm<script setup lang="ts">
 import PasswordInput from "@src/components/ui/inputs/PasswordInput.vue";
 import Button from "@src/components/ui/inputs/Button.vue";
-import type { RegisterPasswordForm } from "./types";
+import type { RegisterPasswordForm } from "@src/types";
 
 const props = defineProps<{
   passwordForm: RegisterPasswordForm;

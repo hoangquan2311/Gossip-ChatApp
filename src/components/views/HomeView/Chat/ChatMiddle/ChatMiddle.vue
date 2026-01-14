@@ -4,16 +4,10 @@ import type { Ref } from "vue";
 
 import { inject, onMounted, ref } from "vue";
 
-import useStore from "@src/store/store";
+import useStore from "../../../../../store/store";
 
 import Message from "@src/components/views/HomeView/Chat/ChatMiddle/Message/Message.vue";
 import TimelineDivider from "@src/components/views/HomeView/Chat/ChatMiddle/TimelineDivider.vue";
-
-const props = defineProps<{
-  handleSelectMessage: (messageId: number) => void;
-  handleDeselectMessage: (messageId: number) => void;
-  selectedMessages: number[];
-}>();
 
 const store = useStore();
 
@@ -26,15 +20,15 @@ const isFollowUp = (index: number, previousIndex: number): boolean => {
   if (previousIndex < 0) {
     return false;
   } else {
-    let previousSender = activeConversation.messages[previousIndex].sender.id;
-    let currentSender = activeConversation.messages[index].sender.id;
+    let previousSender = activeConversation.messages[previousIndex].sender.userId;
+    let currentSender = activeConversation.messages[index].sender.userId;
     return previousSender === currentSender;
   }
 };
 
 // checks whether the message is sent by the authenticated user.
 const isSelf = (message: IMessage): boolean => {
-  return Boolean(store.user && message.sender.id === store.user.id);
+  return Boolean(store.user && message.sender.userId === store.user.userId);
 };
 
 // checks wether the new message has been sent in a new day or not.
@@ -71,9 +65,6 @@ onMounted(() => {
         :self="isSelf(message)"
         :follow-up="isFollowUp(index, index - 1)"
         :divider="renderDivider(index, index - 1)"
-        :selected="props.selectedMessages.includes(message.id)"
-        :handle-select-message="handleSelectMessage"
-        :handle-deselect-message="handleDeselectMessage"
       />
     </div>
   </div>

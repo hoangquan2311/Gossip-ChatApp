@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import useStore from "@src/store/store";
+import { computed } from "vue";
 
 import {
   ArrowLeftOnRectangleIcon,
@@ -8,6 +9,8 @@ import {
 } from "@heroicons/vue/24/outline";
 import Dropdown from "@src/components/ui/navigation/Dropdown/Dropdown.vue";
 import { RouterLink } from "vue-router";
+import { user } from "@src/store/defaults";
+import { getUserNameFirstChar } from "@src/utils";
 
 const props = defineProps<{
   showDropdown: boolean;
@@ -28,6 +31,8 @@ const handleCloseOnClickOutside = (event: Event) => {
     props.handleCloseDropdown();
   }
 };
+
+const userNameFirstChar = computed(() => getUserNameFirstChar(store.user));
 </script>
 
 <template>
@@ -38,7 +43,7 @@ const handleCloseOnClickOutside = (event: Event) => {
       @click="handleShowDropdown"
       class="bg-white rounded-full active:scale-110 focus:outline-none focus:scale-110 transition duration-200 ease-out"
       :style="{
-        'box-shadow': !store.settings.darkMode
+        'box-shadow': !store.darkMode
           ? '0 .125rem .3125rem rgba(193, 202, 255, 0.5),.125rem 0 .3125rem rgba(193, 202, 255, 0.5),-0.125rem 0 .3125rem rgba(193, 202, 255, 0.5),0 -0.125rem .3125rem rgba(193, 202, 255, 0.5)'
           : '0 .125rem .3125rem rgba(0, 70, 128, 0.5),.125rem 0 .3125rem rgba(0, 70, 128, 0.5),-0.125rem 0 .3125rem rgba(0, 70, 128, 0.5),0 -0.125rem .3125rem rgba(0, 70, 128, 0.5)',
       }"
@@ -48,9 +53,17 @@ const handleCloseOnClickOutside = (event: Event) => {
     >
       <div
         id="user-avatar"
-        :style="{ backgroundImage: `url(${store.user?.avatar})` }"
+        v-if="userNameFirstChar === ''"
+        :style="{ backgroundImage: `url(${store.user?.avatarUrl})` }"
         class="w-7 h-7 rounded-full bg-cover bg-center"
       ></div>
+      <div
+        v-else
+        id="user-avatar"
+        class="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-400 to-pink-500 flex items-center justify-center text-white font-bold text-md "
+      >
+        {{ userNameFirstChar }}
+      </div>
     </button>
 
     <!--dropdown menu-->
@@ -68,7 +81,7 @@ const handleCloseOnClickOutside = (event: Event) => {
       :handle-click-outside="handleCloseOnClickOutside"
       :close-dropdown="props.handleCloseDropdown"
     >
-      <button
+      <!-- <button
         class="dropdown-link dropdown-link-primary"
         aria-label="Show profile information"
         role="menuitem"
@@ -78,7 +91,7 @@ const handleCloseOnClickOutside = (event: Event) => {
           class="h-5 w-5 mr-3 text-black opacity-60 dark:text-white dark:opacity-70"
         />
         Profile Information
-      </button>
+      </button> -->
 
       <RouterLink
         to="/reset/"

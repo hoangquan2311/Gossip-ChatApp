@@ -16,6 +16,4 @@ public class Message
     public string Content { get; set; } = null!;
 
     public DateTime SentAt { get; set; } = DateTime.UtcNow;
-
-    public ICollection<MessageReader> Readers { get; set; } = new List<MessageReader>();
 }

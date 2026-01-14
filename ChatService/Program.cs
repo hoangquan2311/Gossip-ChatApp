@@ -3,18 +3,19 @@ using ChatService.Auth;
 using ChatService.Data;
 using ChatService.Hubs;
 using ChatService.Services;
+using ChatService.Models.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Logging cơ bản
+/// Logging
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
 // EF Core + SQL Server
-// EF Core: Sử dụng InMemory nếu config cho phép, ngược lại dùng SQL Server
+// EF Core + SQL Server or In-Memory based on config
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
     var useInMemory = builder.Configuration.GetValue<bool>("Database:UseInMemory");
@@ -30,8 +31,8 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 });
 
 // Password hasher
-builder.Services.AddScoped<Microsoft.AspNetCore.Identity.IPasswordHasher<ChatService.Models.Entities.User>,
-    Microsoft.AspNetCore.Identity.PasswordHasher<ChatService.Models.Entities.User>>();
+builder.Services.AddScoped<Microsoft.AspNetCore.Identity.IPasswordHasher<User>,
+    Microsoft.AspNetCore.Identity.PasswordHasher<User>>();
 
 // Services
 builder.Services.AddScoped<AuthService>();
@@ -43,7 +44,7 @@ builder.Services.AddSingleton<JwtTokenService>();
 builder.Services.AddControllers();
 builder.Services.AddSignalR();
 
-// CORS cho front-end
+// CORS for front-end
 const string CorsPolicy = "AllowVueApp";
 builder.Services.AddCors(options =>
 {
@@ -77,7 +78,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
             ClockSkew = TimeSpan.Zero
         };
-        // Cho SignalR: nhận token qua query access_token
+        // SignalR token handling from query string
         options.Events = new JwtBearerEvents
         {
             OnMessageReceived = context =>
@@ -95,7 +96,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             },
             OnTokenValidated = context =>
             {
-                Console.WriteLine("Token validated successfully");
+                Console.WriteLine("Token validated successfully. User: " +
+                    $"{context.Principal?.Identity?.Name}");
                 return Task.CompletedTask;
             }
         };

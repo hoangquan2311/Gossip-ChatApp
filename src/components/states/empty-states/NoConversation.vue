@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { InboxIcon } from "@heroicons/vue/24/outline";
+import { MinusCircleIcon } from "@heroicons/vue/24/outline";
 
 const props = defineProps<{
   vertical?: boolean;
@@ -20,18 +20,18 @@ const props = defineProps<{
       <div
         class="w-7 h-7 mr-4 flex justify-center items-center rounded-full bg-gray-50 dark:bg-gray-700 transition duration-500"
       >
-        <InboxIcon class="w-5 h-5 text-gray-500 dark:text-white/70" />
+        <MinusCircleIcon class="w-5 h-5 text-gray-500 dark:text-white/70"/>
       </div>
     </div>
 
     <!--content-->
     <div :class="props.vertical ? [] : ['flex', 'flex-col', 'items-start']">
-      <p class="heading-2 text-black/70 dark:text-white/70 mb-3">
-        No conversations
+      <p class="heading-2 text-black/50 dark:text-white/70 mb-3">
+        Empty chat
       </p>
 
-      <p class="body-2 text-black/70 dark:text-white/70 flex">
-        click pencil icon to create one.
+      <p class="body-2 text-black/50 dark:text-white/70 flex">
+        click pencil button to create
       </p>
     </div>
   </div>

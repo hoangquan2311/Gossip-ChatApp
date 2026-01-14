@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
-import type { IContact, IConversation } from "@src/types";
+import type { IConversation, IUser } from "@src/types";
 
 import { computed, ref } from "vue";
 
@@ -18,9 +18,6 @@ const props = defineProps<{
   closeModal: () => void;
 }>();
 
-// selected group member
-const selectedMember: Ref<IContact | undefined> = ref();
-
 // used to determine whether to slide left or right
 const animation = ref("slide-left");
 
@@ -31,7 +28,6 @@ const activePageName = ref("conversation-info");
 const ActiveTab = computed((): any => {
   if (activePageName.value === "conversation-info") return ConversationInfoTab;
   else if (activePageName.value === "members") return ConversationMembersTab;
-  else if (activePageName.value === "group-member") return ConversationInfoTab;
   else if (activePageName.value === "edit-group") return EditGroupInfoTab;
 });
 
@@ -39,19 +35,9 @@ const ActiveTab = computed((): any => {
 const handleChangeActiveTab = (event: {
   tabName: string;
   animationName: string;
-  contact?: IContact;
-  removeContact?: boolean;
 }) => {
   animation.value = event.animationName;
   activePageName.value = event.tabName;
-
-  if (event.contact) {
-    selectedMember.value = event.contact;
-  }
-
-  if (event.removeContact) {
-    selectedMember.value = undefined;
-  }
 };
 </script>
 
@@ -68,7 +54,6 @@ const handleChangeActiveTab = (event: {
               :conversation="props.conversation"
               :close-modal="props.closeModal"
               :key="activePageName"
-              :contact="selectedMember"
             />
           </SlideTransition>
         </div>

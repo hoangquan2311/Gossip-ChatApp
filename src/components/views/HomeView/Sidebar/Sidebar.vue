@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import useStore from "@src/store/store";
+import useStore from "../../../../store/store";
 
 import FadeTransition from "@src/components/ui/transitions/FadeTransition.vue";
 import Conversations from "@src/components/views/HomeView/Sidebar/Conversations/Conversations.vue";

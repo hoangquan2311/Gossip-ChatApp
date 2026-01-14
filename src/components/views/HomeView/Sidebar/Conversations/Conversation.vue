@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import type { IAttachment, IConversation, IRecording } from "@src/types";
+import type { IConversation} from "@src/types";
 import type { Ref } from "vue";
 import { computed, ref } from "vue";
 
-import useStore from "@src/store/store";
+import useStore from "../../../../../store/store";
 import {
   getActiveConversationId,
-  getAvatar,
   getConversationIndex,
-  getName,
-  hasAttachments,
   shorten,
 } from "@src/utils";
 import router from "@src/router";
@@ -23,7 +20,7 @@ const store = useStore();
 
 // (event) select this conversation.
 const handleSelectConversation = () => {
-  router.push({ path: `/chat/${props.conversation.id}/` });
+  router.push({ path: `/chat/${props.conversation.groupId}/` });
 };
 
 // last message in conversation to display
@@ -33,7 +30,7 @@ const lastMessage = computed(
 
 // (event) remove the unread indicator when opening the conversation
 const handleRemoveUnread = () => {
-  let index = getConversationIndex(props.conversation.id);
+  let index = getConversationIndex(props.conversation.groupId);
   if (index !== undefined) {
     store.conversations[index].unread = 0;
   }
@@ -41,14 +38,14 @@ const handleRemoveUnread = () => {
 
 // (computed property) determines if this conversation is active.
 const isActive = computed(
-  () => getActiveConversationId() === props.conversation.id,
+  () => getActiveConversationId() === props.conversation.groupId,
 );
 </script>
 
 <template>
   <div class="select-none">
     <button
-      :aria-label="'conversation with' + getName(props.conversation)"
+      :aria-label="'conversation with' + props.conversation.title"
       tabindex="0"
       @contextmenu.prevent=""
       @click="
@@ -66,7 +63,7 @@ const isActive = computed(
       <!--profile image-->
       <div class="mr-4">
         <div
-          :style="{ backgroundImage: `url(${getAvatar(props.conversation)})` }"
+          :style="{ backgroundImage: `url(${props.conversation.avatarUrl})` }"
           class="w-7 h-7 rounded-full bg-cover bg-center"
         ></div>
       </div>
@@ -77,61 +74,21 @@ const isActive = computed(
           <div class="flex items-start">
             <div class="grow mb-3 text-start">
               <p class="heading-2 text-black/70 dark:text-white/70">
-                {{ getName(props.conversation) }}
+                {{ props.conversation.title }}
               </p>
             </div>
 
             <!--last message date-->
             <p class="body-1 text-black/70 dark:text-white/70">
-              {{ lastMessage?.date }}
+              {{ lastMessage?.sentAt }}
             </p>
           </div>
         </div>
 
         <div class="flex justify-between">
           <div>
-            <!--draft Message-->
-            <p
-              v-if="
-                props.conversation.draftMessage &&
-                props.conversation.id !== getActiveConversationId()
-              "
-              class="body-2 flex justify-start items-center text-red-400"
-            >
-              draft: {{ shorten(props.conversation.draftMessage) }}
-            </p>
-
-            <!--recording name-->
-            <!-- <p
-              v-else-if="
-                lastMessage.type === 'recording' && lastMessage.content
-              "
-              class="body-2 text-black/70 dark:text-white/70 flex justify-start items-center"
-            >
-              <MicrophoneIcon
-                class="w-4 h-4 mr-2 text-black opacity-60 dark:text-white dark:opacity-70"
-                :class="{ 'text-indigo-400': props.conversation.unread }"
-              />
-              <span :class="{ 'text-indigo-400': props.conversation.unread }">
-                Recording
-                {{ (lastMessage.content as IRecording).duration }}
-              </span>
-            </p> -->
-
-            <!--attachments title-->
-            <!-- <p
-              v-else-if="hasAttachments(lastMessage)"
-              class="body-2 text-black/70 dark:text-white/70 flex justify-start items-center"
-              :class="{ 'text-indigo-400': props.conversation.unread }"
-            >
-              <span :class="{ 'text-indigo-400': props.conversation.unread }">
-                {{ (lastMessage?.attachments as IAttachment[])[0].name }}
-              </span>
-            </p> -->
-
             <!--last message content -->
             <p
-              v-else
               class="body-2 text-black/70 dark:text-white/70 flex justify-start items-center"
               :class="{ 'text-indigo-400': props.conversation.unread }"
             >
@@ -153,48 +110,5 @@ const isActive = computed(
         </div>
       </div>
     </button>
-
-    <!--custom context menu-->
-    <!-- <Dropdown
-      :close-dropdown="() => (showContextMenu = false)"
-      :show="showContextMenu"
-      :handle-close="handleCloseContextMenu"
-      :handle-click-outside="handleCloseContextMenu"
-      :coordinates="{
-        left: contextMenuCoordinations?.x + 'px',
-        top: contextMenuCoordinations?.y + 'px',
-      }"
-      :position="['top-0']"
-    >
-      <button
-        class="dropdown-link dropdown-link-primary"
-        aria-label="Show conversation information"
-        role="menuitem"
-        @click="handleCloseContextMenu"
-      >
-        <InformationCircleIcon class="h-5 w-5 mr-3" />
-        Conversation info
-      </button>
-
-      <button
-        class="dropdown-link dropdown-link-primary"
-        aria-label="Add conversation to archive"
-        role="menuitem"
-        @click="handleCloseContextMenu"
-      >
-        <ArchiveBoxArrowDownIcon class="h-5 w-5 mr-3" />
-        Archive conversation
-      </button>
-
-      <button
-        class="dropdown-link dropdown-link-danger"
-        aria-label="Delete the conversation"
-        role="menuitem"
-        @click="handleCloseContextMenu"
-      >
-        <TrashIcon class="h-5 w-5 mr-3" />
-        Delete conversation
-      </button>
-    </Dropdown> -->
   </div>
 </template>

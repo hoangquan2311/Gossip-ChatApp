@@ -1,16 +1,12 @@
 <script setup lang="ts">
-import type { IContact } from "@src/types";
+import type { IUser } from "@src/types";
 
-import useStore from "@src/store/store";
-import { getFullName } from "@src/utils";
+import useStore from "../../../store/store";
 
 defineEmits(["contactSelected"]);
 
 const props = defineProps<{
-  contact: IContact;
-  variant?: string;
-  active?: boolean;
-  unselectable?: boolean;
+  member: IUser;
 }>();
 
 const store = useStore();
@@ -24,7 +20,7 @@ const store = useStore();
       <!--profile image-->
       <div class="mr-4">
         <div
-          :style="{ backgroundImage: `url(${props.contact.avatar})` }"
+          :style="{ backgroundImage: `url(${props.member.avatarUrl})` }"
           class="w-7 h-7 rounded-full bg-cover bg-center"
         ></div>
       </div>
@@ -34,14 +30,14 @@ const store = useStore();
           <!--contact name-->
           <p class="heading-2 text-black/70 dark:text-white/70">
             {{
-              getFullName(props.contact) + (store.user && store.user.id === props.contact.id ? " (You)" : "")
+              props.member.displayName + (store.user && store.user.userId === props.member.userId ? " (You)" : "")
             }}
           </p>
 
         </div>
 
         <!--contact email -->
-        <p class="body-2 text-black/70 dark:text-white/70">{{ props.contact.email }}</p>
+        <p class="body-2 text-black/70 dark:text-white/70">{{ props.member.email }}</p>
       </div>
 
     </div>

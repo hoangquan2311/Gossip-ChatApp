@@ -28,6 +28,28 @@ public class AuthController : ControllerBase
         }
     }
 
+    [HttpGet("verify-me")]
+    [Authorize]
+    public async Task<IActionResult> VerifyMe()
+    {
+        var (IsValid, Error, UserFound) = await _auth.VerifyUserFromPrincipalAsync(User);
+        if (!IsValid)
+        {
+            if (Error == "User not found")
+                return BadRequest(Error);
+            return BadRequest(Error);
+        }
+        var res = new
+        {
+            UserId = UserFound!.Id,
+            UserFound.Email,
+            UserFound.DisplayName,
+            UserFound.AvatarUrl
+        };
+
+        return Ok(res);
+    }
+
     [HttpGet("debug-data")]  // Temporary endpoint; remove after debugging
     public async Task<IActionResult> DebugData()
     {
@@ -44,9 +66,9 @@ public class AuthController : ControllerBase
             var res = await _auth.LoginAsync(req);
             return Ok(res);
         }
-        catch (UnauthorizedAccessException ex)
+        catch (Exception ex)
         {
-            return Unauthorized(ex.Message);
+            return BadRequest(ex.Message);
         }
     }
 
@@ -59,10 +81,10 @@ public class AuthController : ControllerBase
             var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)
                           ?? User.FindFirst("sub");
             if (string.IsNullOrEmpty(idClaim?.Value))
-                return Unauthorized("Invalid token: missing user ID");
+                return BadRequest("Invalid token: missing user ID");
 
             if (!Guid.TryParse(idClaim.Value, out var userId))
-                return BadRequest("Invalid user ID format");
+                return BadRequest ("Invalid user ID format");
 
             await _auth.ChangePasswordAsync(userId, req);
             return Ok("Password changed successfully");

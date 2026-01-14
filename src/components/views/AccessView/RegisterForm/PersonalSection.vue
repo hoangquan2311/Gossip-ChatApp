@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import Button from "@src/components/ui/inputs/Button.vue";
 import LabeledTextInput from "@src/components/ui/inputs/LabeledTextInput.vue";
-import type { RegisterPersonalForm } from "./types";
+import type { RegisterPersonalForm } from "@src/types";
 
-const props = defineProps<{ personalForm: RegisterPersonalForm }>();
+const props = defineProps<{
+  personalForm: RegisterPersonalForm;
+}>();
 
 const emit = defineEmits<{
-  (event: "active-section-change", payload: { sectionName: string; animationName: string }): void;
+  (
+    event: "active-section-change",
+    payload: { sectionName: string; animationName: string },
+  ): void;
   (event: "update:personalForm", payload: RegisterPersonalForm): void;
 }>();
 
@@ -71,13 +76,13 @@ const updateField = (field: keyof RegisterPersonalForm, value: string) => {
     </div>
 
     <!--oauth controls-->
-    <Button class="outlined-primary outlined-text w-full mb-5">
+    <!-- <Button class="outlined-primary outlined-text w-full mb-5">
       <img
         src="@src/assets/vectors/google-logo.svg"
         class="mr-3"
         alt="google-logo"
       />
       Sign in with google
-    </Button>
+    </Button> -->
   </div>
 </template>

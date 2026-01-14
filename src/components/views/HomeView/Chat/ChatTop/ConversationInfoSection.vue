@@ -4,8 +4,7 @@ import type { IConversation } from "@src/types";
 import { inject } from "vue";
 
 import router from "@src/router";
-import useStore from "@src/store/store";
-import { getAvatar, getName } from "@src/utils";
+import useStore from "../../../../../store/store";
 
 import {
   ChevronLeftIcon,
@@ -50,7 +49,7 @@ const handleCloseConversation = () => {
       >
         <div
           :style="{
-            backgroundImage: `url(${getAvatar(activeConversation)})`,
+            backgroundImage: `url(${activeConversation.avatarUrl})`,
           }"
           class="w-[2.25rem] h-[2.25rem] rounded-full bg-cover bg-center"
         ></div>
@@ -63,7 +62,7 @@ const handleCloseConversation = () => {
           @click="props.handleOpenInfo"
           tabindex="0"
         >
-          {{ getName(activeConversation) }}
+          {{ activeConversation.title }}
         </p>
 
         <p
